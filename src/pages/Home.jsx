@@ -4,6 +4,9 @@ import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
 import LaptopMacIcon from "@mui/icons-material/LaptopMac";
 import HeadphonesIcon from "@mui/icons-material/Headphones";
 import DevicesOtherIcon from "@mui/icons-material/DevicesOther";
+import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined";
+import VerifiedUserOutlinedIcon from "@mui/icons-material/VerifiedUserOutlined";
+import WorkspacePremiumOutlinedIcon from "@mui/icons-material/WorkspacePremiumOutlined";
 
 import ProductCard from "../components/ProductCard"
 import products from "../data/products";
@@ -33,6 +36,27 @@ const categories = [
     description: "Everything that completes your setup.",
     icon: <DevicesOtherIcon />,
     path: "/products?category=accessories",
+  },
+];
+
+const benefits = [
+  {
+    title: "Curated Technology",
+    description:
+      "We carefully select products that combine quality, performance, and everyday usefulness.",
+    icon: <WorkspacePremiumOutlinedIcon />,
+  },
+  {
+    title: "Trusted Shopping",
+    description:
+      "Shop confidently with reliable products, transparent pricing, and a secure experience.",
+    icon: <VerifiedUserOutlinedIcon />,
+  },
+  {
+    title: "Fast & Reliable Delivery",
+    description:
+      "Get your technology delivered quickly and safely, so you can start using it sooner.",
+    icon: <LocalShippingOutlinedIcon />,
   },
 ];
 
@@ -143,6 +167,86 @@ export default function Home() {
 
         </div>
       </section>
+
+      {/* WHY TECHHIVE SECTION */}
+<section className="why-techhive-section">
+  <div className="why-techhive-intro">
+    <p className="section-eyebrow">WHY TECHHIVE</p>
+
+    <h2>
+      Technology selected
+      <br />
+      for real life.
+    </h2>
+
+    <p>
+      We believe buying technology should be simple. That is why we focus on
+      products that are useful, reliable, and built for the way you live,
+      work, and play.
+    </p>
+  </div>
+
+  <div className="benefits-grid">
+    {benefits.map((benefit, index) => (
+      <div className="benefit-card" key={benefit.title}>
+        <div className="benefit-number">
+          0{index + 1}
+        </div>
+
+        <div className="benefit-icon">
+          {benefit.icon}
+        </div>
+
+        <h3>{benefit.title}</h3>
+
+        <p>{benefit.description}</p>
+      </div>
+    ))}
+  </div>
+</section>
+
+
+      {/* NEWSLETTER SECTION */}
+<section className="newsletter-section">
+  <div className="newsletter-content">
+    <div>
+      <p className="newsletter-eyebrow">
+        STAY CONNECTED
+      </p>
+
+      <h2>
+        Stay ahead of
+        <br />
+        technology.
+      </h2>
+    </div>
+
+    <div className="newsletter-right">
+      <p>
+        Get updates on new products, technology trends, and exclusive offers
+        delivered straight to your inbox.
+      </p>
+
+      <form className="newsletter-form">
+        <input
+          type="email"
+          placeholder="Enter your email address"
+          aria-label="Email address"
+        />
+
+        <button type="submit">
+          Subscribe
+          <ArrowForwardIcon />
+        </button>
+      </form>
+
+      <span>
+        No spam. Just technology worth knowing about.
+      </span>
+    </div>
+  </div>
+</section>
+
     </main>
   );
 }

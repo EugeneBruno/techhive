@@ -462,3 +462,259 @@
   }
 
 }
+
+/* =========================
+   WHY TECHHIVE
+========================= */
+
+.why-techhive-section {
+  background: #ffffff;
+  padding: 120px 12%;
+  border-top: 1px solid #EDEDED;
+}
+
+.why-techhive-intro {
+  max-width: 750px;
+  margin-bottom: 70px;
+}
+
+.why-techhive-intro h2 {
+  color: #111215;
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  line-height: 1;
+  letter-spacing: -3px;
+  font-weight: 800;
+  margin: 0 0 30px;
+}
+
+.why-techhive-intro > p:last-child {
+  max-width: 620px;
+  color: #6E727A;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  margin: 0;
+}
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid #EDEDED;
+  border-left: 1px solid #EDEDED;
+}
+
+.benefit-card {
+  position: relative;
+  min-height: 360px;
+  padding: 40px;
+  border-right: 1px solid #EDEDED;
+  border-bottom: 1px solid #EDEDED;
+  transition:
+    background 0.25s ease,
+    transform 0.25s ease;
+}
+
+.benefit-card:hover {
+  background: #F8F9FA;
+}
+
+.benefit-number {
+  position: absolute;
+  top: 35px;
+  right: 35px;
+  color: #C85A32;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.benefit-icon {
+  width: 58px;
+  height: 58px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #F8F9FA;
+  border: 1px solid #EDEDED;
+
+  margin-bottom: 70px;
+}
+
+.benefit-icon svg {
+  color: #C85A32;
+  font-size: 28px;
+}
+
+.benefit-card h3 {
+  color: #111215;
+  font-size: 1.5rem;
+  margin: 0 0 15px;
+  font-weight: 700;
+}
+
+.benefit-card p {
+  color: #6E727A;
+  font-size: 1rem;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* =========================
+   NEWSLETTER
+========================= */
+
+.newsletter-section {
+  background: #111215;
+  padding: 100px 12%;
+}
+
+.newsletter-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 100px;
+  align-items: center;
+}
+
+.newsletter-eyebrow {
+  color: #C85A32;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  margin-bottom: 20px;
+}
+
+.newsletter-content h2 {
+  color: #ffffff;
+  font-size: clamp(3rem, 5vw, 5rem);
+  line-height: 1;
+  letter-spacing: -2px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.newsletter-right > p {
+  color: #B5B8BD;
+  font-size: 1rem;
+  line-height: 1.8;
+  max-width: 500px;
+  margin: 0 0 30px;
+}
+.newsletter-form {
+  display: flex;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.newsletter-form input {
+  flex: 1;
+
+  padding: 18px 20px;
+
+  background: transparent;
+  color: #ffffff;
+
+  border: 1px solid #6E727A;
+  border-right: none;
+
+  outline: none;
+
+  font-size: 0.95rem;
+}
+
+.newsletter-form input::placeholder {
+  color: #8A8E95;
+}
+
+.newsletter-form input:focus {
+  border-color: #C85A32;
+}
+
+.newsletter-form button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 0 25px;
+
+  background: #C85A32;
+  color: #ffffff;
+
+  border: none;
+
+  font-size: 0.9rem;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: background 0.25s ease;
+}
+
+.newsletter-form button:hover {
+  background: #A94727;
+}
+
+.newsletter-form button svg {
+  font-size: 19px;
+}
+
+.newsletter-right span {
+  color: #8A8E95;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 1000px) {
+
+  .benefits-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .newsletter-content {
+    grid-template-columns: 1fr;
+    gap: 50px;
+  }
+
+}
+
+@media (max-width: 600px) {
+
+  .why-techhive-section {
+    padding: 80px 7%;
+  }
+
+  .why-techhive-intro {
+    margin-bottom: 50px;
+  }
+
+  .why-techhive-intro h2 {
+    letter-spacing: -1.5px;
+  }
+
+  .benefit-card {
+    min-height: auto;
+    padding: 30px;
+  }
+
+  .benefit-icon {
+    margin-bottom: 45px;
+  }
+
+  .newsletter-section {
+    padding: 80px 7%;
+  }
+
+  .newsletter-form {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .newsletter-form input {
+    border: 1px solid #6E727A;
+  }
+
+  .newsletter-form button {
+    justify-content: center;
+    padding: 18px;
+  }
+
+}

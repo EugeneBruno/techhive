@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-
+import { formartCurrency } from "../utils/formatCurrency";
 function ProductCard({ product }) {
   return (
     <Link
@@ -34,7 +34,7 @@ function ProductCard({ product }) {
         <div className="product-bottom">
 
           <p className="product-price">
-            ${product.price.toLocaleString()}
+            {formartCurrency(product.price)}
           </p>
 
           <ArrowForwardIcon className="product-arrow" />
