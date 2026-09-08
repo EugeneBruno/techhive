@@ -5,6 +5,8 @@ import LaptopMacIcon from "@mui/icons-material/LaptopMac";
 import HeadphonesIcon from "@mui/icons-material/Headphones";
 import DevicesOtherIcon from "@mui/icons-material/DevicesOther";
 
+import ProductCard from "../components/ProductCard"
+import products from "../data/products";
 import "../App.css";
 
 const categories = [
@@ -100,6 +102,45 @@ export default function Home() {
               <ArrowForwardIcon className="category-arrow" />
             </Link>
           ))}
+        </div>
+      </section>
+
+      {/* FEATURED PRODUCTS */}
+      <section className="featured-products-section">
+        <div className="section-header">
+
+          <div>
+
+            <p className="section-eyebrow">
+              FEATURED
+            </p>
+
+            <h2>
+              Technology worth exploring.
+            </h2>
+
+          </div>
+
+          <Link
+            to="/products"
+            className="view-all-link"
+          >
+            View all products
+
+            <ArrowForwardIcon />
+
+          </Link>
+
+        </div>
+        <div className="products-grid">
+         {products.map((product) => (
+          <ProductCard
+            key={product.id}
+            product={product}
+          />
+
+         ))}
+
         </div>
       </section>
     </main>
