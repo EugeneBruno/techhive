@@ -5,21 +5,30 @@ function Footer() {
     <Box
       component="footer"
       sx={{
-        backgroundColor: "#1a1a1a",
-        color: "white",
-        py: 3,
-        mt: "auto",
+        backgroundColor: "#FFFFFF",
+        borderTop: "1px solid #EDEDED",
+        py: 4,
       }}
     >
       <Container maxWidth="lg">
-        <Typography variant="body1" align="center">
+        <Typography
+          sx={{
+            textAlign: "center",
+            color: "#111215",
+            fontWeight: 600,
+            fontSize: "0.95rem",
+          }}
+        >
           © {new Date().getFullYear()} TechHive. All rights reserved.
         </Typography>
 
         <Typography
-          variant="body2"
-          align="center"
-          sx={{ mt: 1, color: "#bdbdbd" }}
+          sx={{
+            textAlign: "center",
+            color: "#6E727A",
+            fontSize: "0.9rem",
+            mt: 1,
+          }}
         >
           Your Hub for Modern Technology
         </Typography>
