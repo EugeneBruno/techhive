@@ -1,1 +1,281 @@
-/* Global application styles are handled in index.css and Material UI */
+/* ========================================
+   HERO SECTION
+======================================== */
+
+.hero-section {
+  min-height: 620px;
+  background-color: #F8F9FA;
+  padding: 110px 12% 100px;
+  display: flex;
+  align-items: center;
+}
+
+.hero-content {
+  max-width: 900px;
+}
+
+.hero-eyebrow {
+  color: #C85A32;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  margin-bottom: 28px;
+}
+
+.hero-content h1 {
+  color: #111215;
+  font-size: clamp(4rem, 8vw, 7rem);
+  line-height: 0.92;
+  letter-spacing: -5px;
+  font-weight: 800;
+  margin: 0 0 28px;
+  max-width: 950px;
+}
+
+.hero-description {
+  max-width: 700px;
+  color: #6E727A;
+  font-size: 1.25rem;
+  line-height: 1.7;
+  margin-bottom: 40px;
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.primary-button,
+.secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  padding: 17px 28px;
+
+  text-decoration: none;
+
+  font-size: 0.95rem;
+  font-weight: 700;
+
+  transition: 0.25s ease;
+}
+
+.primary-button {
+  background-color: #C85A32;
+  color: #FFFFFF;
+  border: 1px solid #C85A32;
+}
+
+.primary-button:hover {
+  background-color: #A94725;
+  border-color: #A94725;
+}
+
+.secondary-button {
+  background-color: transparent;
+  color: #111215;
+  border: 1px solid #111215;
+}
+
+.secondary-button:hover {
+  background-color: #111215;
+  color: #FFFFFF;
+}
+
+
+/* ========================================
+   FEATURED CATEGORIES
+======================================== */
+
+.categories-section {
+  background-color: #FFFFFF;
+  padding: 100px 12%;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 50px;
+}
+
+.section-eyebrow {
+  color: #C85A32;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  margin-bottom: 12px;
+}
+
+.section-header h2 {
+  color: #111215;
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  margin: 0;
+  font-weight: 800;
+  letter-spacing: -2px;
+}
+
+.view-all-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  color: #111215;
+  text-decoration: none;
+
+  font-weight: 600;
+
+  border-bottom: 1px solid #111215;
+  padding-bottom: 5px;
+}
+
+.view-all-link svg {
+  font-size: 18px;
+}
+
+
+/* ========================================
+   CATEGORY GRID
+======================================== */
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+
+/* ========================================
+   CATEGORY CARD
+======================================== */
+
+.category-card {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  min-height: 280px;
+  padding: 30px;
+
+  background: #F8F9FA;
+  border: 1px solid #EDEDED;
+
+  text-decoration: none;
+  color: #111215;
+
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.category-card:hover {
+  transform: translateY(-6px);
+  border-color: #C85A32;
+}
+
+.category-icon {
+  width: 55px;
+  height: 55px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #FFFFFF;
+  border: 1px solid #EDEDED;
+
+  margin-bottom: 50px;
+}
+
+.category-icon svg {
+  color: #C85A32;
+  font-size: 28px;
+}
+
+.category-content h3 {
+  color: #111215;
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.category-content p {
+  color: #6E727A;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.category-arrow {
+  position: absolute;
+  right: 25px;
+  bottom: 25px;
+  color: #111215;
+}
+
+
+/* ========================================
+   RESPONSIVE DESIGN
+======================================== */
+
+@media (max-width: 1000px) {
+
+  .hero-section {
+    padding: 90px 8%;
+  }
+
+  .categories-section {
+    padding: 80px 8%;
+  }
+
+  .categories-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+}
+
+
+@media (max-width: 600px) {
+
+  .hero-section {
+    min-height: auto;
+    padding: 80px 7%;
+  }
+
+  .hero-content h1 {
+    font-size: clamp(3.2rem, 14vw, 5rem);
+    letter-spacing: -3px;
+  }
+
+  .hero-description {
+    font-size: 1rem;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .primary-button,
+  .secondary-button {
+    width: 100%;
+  }
+
+  .categories-section {
+    padding: 70px 7%;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 25px;
+  }
+
+  .categories-grid {
+    grid-template-columns: 1fr;
+  }
+
+}

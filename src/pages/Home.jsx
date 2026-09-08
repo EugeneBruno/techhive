@@ -1,104 +1,107 @@
-import {
-  Box,
-  Button,
-  Container,
-  Typography,
-} from "@mui/material";
 import { Link } from "react-router-dom";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
+import LaptopMacIcon from "@mui/icons-material/LaptopMac";
+import HeadphonesIcon from "@mui/icons-material/Headphones";
+import DevicesOtherIcon from "@mui/icons-material/DevicesOther";
 
-function Home() {
+import "../App.css";
+
+const categories = [
+  {
+    name: "Smartphones",
+    description: "Latest devices from leading brands.",
+    icon: <PhoneIphoneIcon />,
+    path: "/products?category=smartphones",
+  },
+  {
+    name: "Laptops",
+    description: "Powerful machines for work and play.",
+    icon: <LaptopMacIcon />,
+    path: "/products?category=laptops",
+  },
+  {
+    name: "Audio",
+    description: "Headphones, speakers, and more.",
+    icon: <HeadphonesIcon />,
+    path: "/products?category=audio",
+  },
+  {
+    name: "Accessories",
+    description: "Everything that completes your setup.",
+    icon: <DevicesOtherIcon />,
+    path: "/products?category=accessories",
+  },
+];
+
+export default function Home() {
   return (
-    <Box>
-      <Box
-        sx={{
-          minHeight: "520px",
-          display: "flex",
-          alignItems: "center",
-          backgroundColor: "#F8F9FA",
-          borderBottom: "1px solid #EDEDED",
-        }}
-      >
-        <Container maxWidth="lg">
-          <Box
-            sx={{
-              maxWidth: "750px",
-              py: { xs: 8, md: 12 },
-            }}
-          >
-            <Typography
-              sx={{
-                color: "#C85A32",
-                fontWeight: 700,
-                fontSize: "0.85rem",
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-                mb: 2,
-              }}
-            >
-              Technology for everyday life
-            </Typography>
+    <main>
+      {/* HERO SECTION */}
+      <section className="hero-section">
+        <div className="hero-content">
+          <p className="hero-eyebrow">WELCOME TO TECHHIVE</p>
 
-            <Typography
-              component="h1"
-              sx={{
-                fontSize: {
-                  xs: "2.8rem",
-                  sm: "4rem",
-                  md: "5.5rem",
-                },
-                fontWeight: 800,
-                lineHeight: 0.95,
-                letterSpacing: "-0.04em",
-                color: "#111215",
-                mb: 3,
-              }}
-            >
-              Technology that moves with you.
-            </Typography>
+          <h1>
+            The technology
+            <br />
+            you need.
+            <br />
+            All in one place.
+          </h1>
 
-            <Typography
-              sx={{
-                fontSize: {
-                  xs: "1rem",
-                  md: "1.2rem",
-                },
-                lineHeight: 1.7,
-                color: "#6E727A",
-                maxWidth: "600px",
-                mb: 4,
-              }}
-            >
-              Discover carefully selected technology, from powerful
-              laptops and smartphones to the accessories that keep
-              your digital life moving.
-            </Typography>
+          <p className="hero-description">
+            Explore a carefully selected collection of smartphones, laptops,
+            audio devices, accessories, and the latest technology built for
+            everyday life.
+          </p>
 
-            <Button
-              component={Link}
-              to="/products"
-              variant="contained"
-              disableElevation
-              sx={{
-                backgroundColor: "#C85A32",
-                color: "#FFFFFF",
-                borderRadius: 0,
-                px: 4,
-                py: 1.5,
-                fontWeight: 700,
-                textTransform: "none",
-                fontSize: "1rem",
-                "&:hover": {
-                  backgroundColor: "#A94725",
-                },
-              }}
+          <div className="hero-actions">
+            <Link to="/products" className="primary-button">
+              Shop Products
+              <ArrowForwardIcon />
+            </Link>
+
+            <Link to="/products" className="secondary-button">
+              Browse Categories
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* FEATURED CATEGORIES */}
+      <section className="categories-section">
+        <div className="section-header">
+          <div>
+            <p className="section-eyebrow">EXPLORE</p>
+            <h2>Shop by category.</h2>
+          </div>
+
+          <Link to="/products" className="view-all-link">
+            View all products
+            <ArrowForwardIcon />
+          </Link>
+        </div>
+
+        <div className="categories-grid">
+          {categories.map((category) => (
+            <Link
+              to={category.path}
+              className="category-card"
+              key={category.name}
             >
-              Explore Products
-            </Button>
-          </Box>
-        </Container>
-      </Box>
-    </Box>
+              <div className="category-icon">{category.icon}</div>
+
+              <div className="category-content">
+                <h3>{category.name}</h3>
+                <p>{category.description}</p>
+              </div>
+
+              <ArrowForwardIcon className="category-arrow" />
+            </Link>
+          ))}
+        </div>
+      </section>
+    </main>
   );
 }
-
-export default Home;
