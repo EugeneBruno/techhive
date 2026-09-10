@@ -1,4 +1,7 @@
 import { useState } from "react";
+
+import { useCart } from "../context/CartContext";
+
 import {
   AppBar,
   Toolbar,
@@ -24,6 +27,8 @@ import { Link, useLocation } from "react-router-dom";
 function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+
+  const { cartItemCount } = useCart();
 
   const navItems = [
     { label: "Home", path: "/" },
@@ -68,7 +73,8 @@ function Navbar() {
                 letterSpacing: "-0.04em",
               }}
             >
-              Tech<span style={{ color: "#C85A32" }}>Hive</span>
+              Tech
+              <span style={{ color: "#C85A32" }}>Hive</span>
             </Typography>
 
             {/* Desktop Navigation */}
@@ -121,7 +127,7 @@ function Navbar() {
                 );
               })}
 
-              {/* Cart */}
+              {/* Desktop Cart */}
               <IconButton
                 component={Link}
                 to="/cart"
@@ -139,11 +145,13 @@ function Navbar() {
                 }}
               >
                 <Badge
-                  badgeContent={0}
+                  badgeContent={cartItemCount}
+                  invisible={cartItemCount === 0}
                   sx={{
                     "& .MuiBadge-badge": {
                       backgroundColor: "#C85A32",
                       color: "#FFFFFF",
+                      fontWeight: 700,
                     },
                   }}
                 >
@@ -162,17 +170,34 @@ function Navbar() {
                 alignItems: "center",
               }}
             >
+              {/* Mobile Cart */}
               <IconButton
                 component={Link}
                 to="/cart"
                 sx={{
-                  color: "#111215",
+                  color:
+                    location.pathname === "/cart"
+                      ? "#C85A32"
+                      : "#111215",
                   mr: 1,
                 }}
               >
-                <ShoppingCartOutlinedIcon />
+                <Badge
+                  badgeContent={cartItemCount}
+                  invisible={cartItemCount === 0}
+                  sx={{
+                    "& .MuiBadge-badge": {
+                      backgroundColor: "#C85A32",
+                      color: "#FFFFFF",
+                      fontWeight: 700,
+                    },
+                  }}
+                >
+                  <ShoppingCartOutlinedIcon />
+                </Badge>
               </IconButton>
 
+              {/* Menu */}
               <IconButton
                 onClick={toggleDrawer}
                 sx={{
@@ -215,7 +240,8 @@ function Navbar() {
               color: "#111215",
             }}
           >
-            Tech<span style={{ color: "#C85A32" }}>Hive</span>
+            Tech
+            <span style={{ color: "#C85A32" }}>Hive</span>
           </Typography>
 
           <IconButton onClick={toggleDrawer}>
@@ -238,7 +264,6 @@ function Navbar() {
                     borderLeft: isActive
                       ? "3px solid #C85A32"
                       : "3px solid transparent",
-
                     backgroundColor: isActive
                       ? "#F8F9FA"
                       : "transparent",
@@ -252,7 +277,9 @@ function Navbar() {
                     primary={item.label}
                     primaryTypographyProps={{
                       fontWeight: isActive ? 700 : 500,
-                      color: isActive ? "#C85A32" : "#111215",
+                      color: isActive
+                        ? "#C85A32"
+                        : "#111215",
                     }}
                   />
                 </ListItemButton>

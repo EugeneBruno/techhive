@@ -1,4 +1,6 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { CartProvider } from "./context/CartContext";
 import { Box } from "@mui/material"
 
 import Navbar from "./components/Navbar";
@@ -12,9 +14,21 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 
+function ScrollToTop() {
+  const { pathname, search } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname, search]);
+
+  return null;
+}
+
 function App() {
   return (
+    <CartProvider>
     <BrowserRouter>
+      <ScrollToTop />
       <Box sx={{
         minHeight: "100vh",
         display: "flex",
@@ -37,6 +51,7 @@ function App() {
     
       </Box>  
     </BrowserRouter>
+    </CartProvider>
   );
 }
 

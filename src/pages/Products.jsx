@@ -22,7 +22,7 @@ function Products() {
 
   const categoryParam = searchParams.get("category") || "All";
   const categoryFromUrl = categoryParam
-    ? categoryParam.charAt(0).toUpperCase + categoryParam.slice(1)
+    ? categoryParam.charAt(0).toUpperCase() + categoryParam.slice(1)
     : "All" 
 
   const [activeCategory, setActiveCategory] = useState(categoryFromUrl);
