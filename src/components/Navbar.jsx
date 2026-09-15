@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 
 import {
   AppBar,
@@ -22,23 +23,78 @@ import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+
   const location = useLocation();
+  const navigate = useNavigate();
 
   const { cartItemCount } = useCart();
+  const { currentUser, logout } = useAuth();
 
   const navItems = [
     { label: "Home", path: "/" },
     { label: "Products", path: "/products" },
-    { label: "Login", path: "/login" },
-    { label: "Register", path: "/register" },
   ];
+
+  const authNavItems = currentUser
+    ? [{ label: "Profile", path: "/profile" }]
+    : [
+        { label: "Login", path: "/login" },
+        { label: "Register", path: "/register" },
+      ];
 
   const toggleDrawer = () => {
     setMobileOpen(!mobileOpen);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setMobileOpen(false);
+      navigate("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
+  const renderNavItem = (item) => {
+    const isActive = location.pathname === item.path;
+
+    return (
+      <Button
+        key={item.path}
+        component={Link}
+        to={item.path}
+        sx={{
+          color: isActive ? "#C85A32" : "#111215",
+          fontWeight: isActive ? 700 : 500,
+          textTransform: "none",
+          fontSize: "0.95rem",
+          px: 1.5,
+          position: "relative",
+          "&:hover": {
+            backgroundColor: "transparent",
+            color: "#C85A32",
+          },
+          "&::after": isActive
+            ? {
+                content: '""',
+                position: "absolute",
+                bottom: "4px",
+                left: "20%",
+                width: "60%",
+                height: "2px",
+                backgroundColor: "#C85A32",
+              }
+            : {},
+        }}
+      >
+        {item.label}
+      </Button>
+    );
   };
 
   return (
@@ -88,44 +144,28 @@ function Navbar() {
                 gap: 1,
               }}
             >
-              {navItems.map((item) => {
-                const isActive = location.pathname === item.path;
+              {navItems.map(renderNavItem)}
+              {authNavItems.map(renderNavItem)}
 
-                return (
-                  <Button
-                    key={item.path}
-                    component={Link}
-                    to={item.path}
-                    sx={{
-                      color: isActive ? "#C85A32" : "#111215",
-                      fontWeight: isActive ? 700 : 500,
-                      textTransform: "none",
-                      fontSize: "0.95rem",
-                      px: 1.5,
-                      position: "relative",
-
-                      "&:hover": {
-                        backgroundColor: "transparent",
-                        color: "#C85A32",
-                      },
-
-                      "&::after": isActive
-                        ? {
-                            content: '""',
-                            position: "absolute",
-                            bottom: "4px",
-                            left: "20%",
-                            width: "60%",
-                            height: "2px",
-                            backgroundColor: "#C85A32",
-                          }
-                        : {},
-                    }}
-                  >
-                    {item.label}
-                  </Button>
-                );
-              })}
+              {/* Desktop Logout */}
+              {currentUser && (
+                <Button
+                  onClick={handleLogout}
+                  sx={{
+                    color: "#111215",
+                    fontWeight: 500,
+                    textTransform: "none",
+                    fontSize: "0.95rem",
+                    px: 1.5,
+                    "&:hover": {
+                      backgroundColor: "transparent",
+                      color: "#C85A32",
+                    },
+                  }}
+                >
+                  Logout
+                </Button>
+              )}
 
               {/* Desktop Cart */}
               <IconButton
@@ -137,7 +177,6 @@ function Navbar() {
                     location.pathname === "/cart"
                       ? "#C85A32"
                       : "#111215",
-
                   "&:hover": {
                     backgroundColor: "#F8F9FA",
                     color: "#C85A32",
@@ -267,7 +306,6 @@ function Navbar() {
                     backgroundColor: isActive
                       ? "#F8F9FA"
                       : "transparent",
-
                     "&:hover": {
                       backgroundColor: "#F8F9FA",
                     },
@@ -277,15 +315,71 @@ function Navbar() {
                     primary={item.label}
                     primaryTypographyProps={{
                       fontWeight: isActive ? 700 : 500,
-                      color: isActive
-                        ? "#C85A32"
-                        : "#111215",
+                      color: isActive ? "#C85A32" : "#111215",
                     }}
                   />
                 </ListItemButton>
               </ListItem>
             );
           })}
+
+          {authNavItems.map((item) => {
+            const isActive = location.pathname === item.path;
+
+            return (
+              <ListItem key={item.path} disablePadding>
+                <ListItemButton
+                  component={Link}
+                  to={item.path}
+                  onClick={toggleDrawer}
+                  sx={{
+                    mb: 1,
+                    borderLeft: isActive
+                      ? "3px solid #C85A32"
+                      : "3px solid transparent",
+                    backgroundColor: isActive
+                      ? "#F8F9FA"
+                      : "transparent",
+                    "&:hover": {
+                      backgroundColor: "#F8F9FA",
+                    },
+                  }}
+                >
+                  <ListItemText
+                    primary={item.label}
+                    primaryTypographyProps={{
+                      fontWeight: isActive ? 700 : 500,
+                      color: isActive ? "#C85A32" : "#111215",
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            );
+          })}
+
+          {/* Mobile Logout */}
+          {currentUser && (
+            <ListItem disablePadding>
+              <ListItemButton
+                onClick={handleLogout}
+                sx={{
+                  mb: 1,
+                  borderLeft: "3px solid transparent",
+                  "&:hover": {
+                    backgroundColor: "#F8F9FA",
+                  },
+                }}
+              >
+                <ListItemText
+                  primary="Logout"
+                  primaryTypographyProps={{
+                    fontWeight: 500,
+                    color: "#111215",
+                  }}
+                />
+              </ListItemButton>
+            </ListItem>
+          )}
         </List>
       </Drawer>
     </>

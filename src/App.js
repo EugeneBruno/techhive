@@ -1,6 +1,7 @@
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { useEffect } from "react";
 import { CartProvider } from "./context/CartContext";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 import { Box } from "@mui/material"
 
 import Navbar from "./components/Navbar";
@@ -24,8 +25,19 @@ function ScrollToTop() {
   return null;
 }
 
+function ProtectedRoute({ children }) {
+  const { currentUser } = useAuth();
+
+  if (!currentUser) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}
+
 function App() {
   return (
+    <AuthProvider>
     <CartProvider>
     <BrowserRouter>
       <ScrollToTop />
@@ -44,7 +56,12 @@ function App() {
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/profile" element={<Profile />} />
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              } 
+            />
           </Routes>
         </Box>
         <Footer />
@@ -52,6 +69,7 @@ function App() {
       </Box>  
     </BrowserRouter>
     </CartProvider>
+    </AuthProvider>
   );
 }
 
