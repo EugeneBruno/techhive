@@ -1,14 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
+
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
+
+import { addDoc, collection, doc, getDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "../firebase/firebaseConfig";
+
 import { formartCurrency } from "../utils/formatCurrency";
 import "../App.css";
-
 function Checkout() {
-  const { cartItems, cartTotal } = useCart();
+  const { cartItems, cartTotal, clearCart } = useCart();
+  const { currentUser } = useAuth();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -22,7 +29,44 @@ function Checkout() {
     deliveryNote: "",
   });
 
+  useEffect(() => {
+  const loadUserData = async () => {
+    if (!currentUser) {
+      return;
+    }
+
+    try {
+      const userRef = doc(db, "users", currentUser.uid);
+      const userSnapshot = await getDoc(userRef);
+
+      if (userSnapshot.exists()) {
+        const savedUserData = userSnapshot.data();
+
+        setFormData((currentData) => ({
+          ...currentData,
+          firstName: currentData.firstName || savedUserData.firstName || "",
+          lastName: currentData.lastName || savedUserData.lastName || "",
+          email: currentData.email || savedUserData.email || currentUser.email || "",
+          phone: currentData.phone || savedUserData.phone || "",
+        }));
+      } else {
+        setFormData((currentData) => ({
+          ...currentData,
+          email: currentData.email || currentUser.email || "",
+        }));
+      }
+    } catch (error) {
+      console.error("Error loading checkout user data:", error);
+    }
+  };
+
+  loadUserData();
+}, [currentUser]);
+
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [orderId, setOrderId] = useState("");
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -33,11 +77,69 @@ function Checkout() {
     }));
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const handleSubmit = async (event) => {
+  event.preventDefault();
 
+  if (!currentUser) {
+    navigate("/login");
+    return;
+  }
+
+  setError("");
+  setIsSubmitting(true);
+
+  try {
+    const orderData = {
+      userId: currentUser.uid,
+
+      customer: {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+      },
+
+      deliveryAddress: {
+        address: formData.address,
+        city: formData.city,
+        state: formData.state,
+        deliveryNote: formData.deliveryNote,
+      },
+
+      items: cartItems.map((item) => ({
+        productId: item.id,
+        name: item.name,
+        category: item.category,
+        image: item.image,
+        price: item.price,
+        quantity: item.quantity,
+        subtotal: item.price * item.quantity,
+      })),
+
+      subtotal: cartTotal,
+      deliveryFee: 0,
+      total: cartTotal,
+
+      paymentMethod: "Pending confirmation",
+      status: "Pending",
+      createdAt: serverTimestamp(),
+    };
+
+    const orderReference = await addDoc(
+      collection(db, "orders"),
+      orderData
+    );
+
+    setOrderId(orderReference.id);
+    clearCart();
     setOrderPlaced(true);
-  };
+  } catch (error) {
+    console.error("Error placing order:", error);
+    setError("We could not place your order. Please try again.");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   if (cartItems.length === 0 && !orderPlaced) {
     return (
@@ -82,6 +184,11 @@ function Checkout() {
               to confirm delivery and payment arrangements.
             </p>
 
+            {orderId && (
+              <p className="order-reference">
+                Order Reference: <strong>{orderId}</strong>
+              </p>
+            )}
             <button
               type="button"
               className="checkout-button success-button"
@@ -115,6 +222,7 @@ function Checkout() {
         </div>
 
         <div className="checkout-layout">
+          {error && <p className="form-error">{error}</p>}
           <form className="checkout-form" onSubmit={handleSubmit}>
             <section className="checkout-section">
               <div className="checkout-section-heading">
@@ -269,9 +377,9 @@ function Checkout() {
               </div>
             </section>
 
-            <button type="submit" className="checkout-submit-button">
-              Place Order
-              <ArrowForwardIcon />
+            <button type="submit" className="checkout-submit-button" disabled={isSubmitting}>
+              {isSubmitting ? "Placing Order..." : "Place Order"}
+              {isSubmitting && <ArrowForwardIcon />}
             </button>
           </form>
 
