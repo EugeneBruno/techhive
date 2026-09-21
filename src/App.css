@@ -3031,3 +3031,592 @@
   font-size: 0.9rem;
   line-height: 1.5;
 }
+.checkout-submit-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.order-reference {
+  margin-top: 20px;
+  padding: 14px 18px;
+  background-color: #f8f9fa;
+  border: 1px solid #ededed;
+  color: #6e727a;
+  font-size: 0.9rem;
+}
+
+.order-reference strong {
+  color: #111215;
+  overflow-wrap: anywhere;
+}
+.profile-orders-message {
+  margin-top: 24px;
+  color: #6e727a;
+}
+
+.profile-orders-empty {
+  margin-top: 24px;
+  padding: 28px 20px;
+  border: 1px dashed #ededed;
+  background-color: #f8f9fa;
+  text-align: center;
+}
+
+.profile-orders-empty svg {
+  color: #c85a32;
+  font-size: 2rem;
+}
+
+.profile-orders-empty h3 {
+  margin: 12px 0 8px;
+  color: #111215;
+  font-size: 1.05rem;
+}
+
+.profile-orders-empty p {
+  margin: 0 auto 20px;
+  max-width: 380px;
+  color: #6e727a;
+}
+
+.profile-orders-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 18px;
+  background-color: #c85a32;
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.profile-orders-button:hover {
+  background-color: #a94726;
+}
+
+.profile-orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.profile-order-card {
+  padding: 20px;
+  border: 1px solid #ededed;
+  background-color: #ffffff;
+}
+
+.profile-order-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #ededed;
+}
+
+.profile-order-card-header div,
+.profile-order-card-details div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.profile-order-card-header span:first-child,
+.profile-order-card-details span {
+  color: #6e727a;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.profile-order-card-header strong {
+  max-width: 240px;
+  color: #111215;
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+
+.profile-order-status {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  background-color: #f8f9fa;
+  color: #6e727a;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.profile-order-status.pending {
+  background-color: #fff4e8;
+  color: #a65b16;
+}
+
+.profile-order-status.confirmed {
+  background-color: #edf7ef;
+  color: #28733d;
+}
+
+.profile-order-status.completed {
+  background-color: #edf7ef;
+  color: #28733d;
+}
+
+.profile-order-status.cancelled {
+  background-color: #fceeee;
+  color: #a83232;
+}
+
+.profile-order-card-details {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  padding-top: 18px;
+}
+
+.profile-order-card-details strong {
+  color: #111215;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 600px) {
+  .profile-order-card-header {
+    flex-direction: column;
+  }
+
+  .profile-order-card-details {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+/* =========================================
+   ORDER HISTORY
+   ========================================= */
+
+.profile-orders-section {
+  width: 100%;
+}
+
+.profile-orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 24px;
+}
+
+/* Individual order card */
+.profile-order-card {
+  border: 1px solid #ededed;
+  background-color: #ffffff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+}
+
+.profile-order-card:hover {
+  border-color: #dcdcdc;
+}
+
+.profile-order-card-expanded {
+  border-color: #d8d8d8;
+}
+
+/* =========================================
+   ORDER HEADER
+   ========================================= */
+
+.profile-order-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 22px;
+}
+
+.profile-order-card-header > div {
+  min-width: 0;
+}
+
+.profile-order-card-header span:first-child {
+  display: block;
+  margin-bottom: 7px;
+  color: #6e727a;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.profile-order-card-header strong {
+  display: block;
+  color: #111215;
+  font-size: 0.9rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+/* =========================================
+   ORDER STATUS
+   ========================================= */
+
+.profile-order-status {
+  flex-shrink: 0;
+  padding: 7px 12px;
+  background-color: #fff4e9;
+  color: #a94d20;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.profile-order-status.pending {
+  background-color: #fff4e9;
+  color: #a94d20;
+}
+
+.profile-order-status.completed {
+  background-color: #edf7f0;
+  color: #287a42;
+}
+
+.profile-order-status.processing {
+  background-color: #f5f1e8;
+  color: #80621f;
+}
+
+.profile-order-status.cancelled {
+  background-color: #f9eeee;
+  color: #a33a3a;
+}
+
+/* =========================================
+   ORDER SUMMARY
+   ========================================= */
+
+.profile-order-card-details {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin: 0 22px;
+  padding: 18px 0;
+  border-top: 1px solid #ededed;
+}
+
+.profile-order-card-details div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profile-order-card-details span {
+  color: #6e727a;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.profile-order-card-details strong {
+  color: #111215;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+/* =========================================
+   VIEW / HIDE ITEMS BUTTON
+   ========================================= */
+
+.profile-order-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 14px 22px;
+
+  border: none;
+  border-top: 1px solid #ededed;
+
+  background-color: #ffffff;
+  color: #c85a32;
+
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+
+  cursor: pointer;
+  text-align: left;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.profile-order-toggle:hover {
+  background-color: #faf7f5;
+}
+
+.profile-order-toggle-icon {
+  font-size: 20px !important;
+  transition: transform 0.2s ease;
+}
+
+.profile-order-toggle-icon.expanded {
+  transform: rotate(180deg);
+}
+
+/* =========================================
+   ORDER ITEMS
+   ========================================= */
+
+.profile-order-items {
+  padding: 0 22px 22px;
+  background-color: #fafafa;
+  border-top: 1px solid #ededed;
+}
+
+.profile-order-items-heading {
+  padding: 20px 0 14px;
+}
+
+.profile-order-items-heading h3 {
+  margin: 0;
+  color: #111215;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+/* =========================================
+   ITEMS LIST
+   ========================================= */
+
+.profile-order-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Individual product */
+.profile-order-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  padding: 14px;
+
+  background-color: #ffffff;
+  border: 1px solid #ededed;
+}
+
+/* Product image */
+.profile-order-item-image {
+  width: 76px;
+  height: 76px;
+  flex-shrink: 0;
+
+  overflow: hidden;
+  background-color: #f4f4f4;
+}
+
+.profile-order-item-image img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+/* Product information */
+.profile-order-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-order-item-info h4 {
+  margin: 0 0 5px;
+
+  color: #111215;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.profile-order-item-info > span {
+  display: block;
+  margin-bottom: 7px;
+
+  color: #6e727a;
+  font-size: 0.78rem;
+}
+
+.profile-order-item-info p {
+  margin: 0;
+
+  color: #6e727a;
+  font-size: 0.8rem;
+}
+
+/* Item subtotal */
+.profile-order-item-subtotal {
+  flex-shrink: 0;
+
+  color: #111215;
+  font-size: 0.9rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* =========================================
+   ORDER TOTAL
+   ========================================= */
+
+.profile-order-items-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-top: 16px;
+  padding-top: 16px;
+
+  border-top: 1px solid #dedede;
+}
+
+.profile-order-items-total span {
+  color: #6e727a;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.profile-order-items-total strong {
+  color: #111215;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* =========================================
+   EMPTY ORDER STATE
+   ========================================= */
+
+.profile-orders-message {
+  margin-top: 20px;
+  color: #6e727a;
+}
+
+.profile-orders-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 45px 25px;
+  margin-top: 24px;
+
+  border: 1px solid #ededed;
+  background-color: #fafafa;
+
+  text-align: center;
+}
+
+.profile-orders-empty > svg {
+  margin-bottom: 14px;
+  color: #c85a32;
+  font-size: 42px;
+}
+
+.profile-orders-empty h3 {
+  margin: 0 0 8px;
+  color: #111215;
+  font-size: 1rem;
+}
+
+.profile-orders-empty p {
+  max-width: 420px;
+  margin: 0 0 20px;
+  color: #6e727a;
+}
+
+.profile-orders-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 11px 18px;
+
+  background-color: #c85a32;
+  color: #ffffff;
+
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+
+  transition: background-color 0.2s ease;
+}
+
+.profile-orders-button:hover {
+  background-color: #a94726;
+}
+
+/* =========================================
+   MOBILE
+   ========================================= */
+
+@media (max-width: 700px) {
+  .profile-order-card-header {
+    padding: 17px;
+  }
+
+  .profile-order-card-details {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin: 0 17px;
+  }
+
+  .profile-order-toggle {
+    padding: 13px 17px;
+  }
+
+  .profile-order-items {
+    padding: 0 17px 17px;
+  }
+
+  .profile-order-item {
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .profile-order-item-image {
+    width: 64px;
+    height: 64px;
+  }
+
+  .profile-order-item-subtotal {
+    font-size: 0.82rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-order-card-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .profile-order-status {
+    align-self: flex-start;
+  }
+
+  .profile-order-item {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+  }
+
+  .profile-order-item-subtotal {
+    grid-column: 2;
+  }
+}
