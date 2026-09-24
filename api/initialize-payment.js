@@ -1,22 +1,39 @@
 const admin = require("firebase-admin");
 
-if (!admin.apps.length) {
+const firebaseProjectId = process.env.FIREBASE_PROJECT_ID;
+const firebaseClientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+const firebasePrivateKey = process.env.FIREBASE_PRIVATE_KEY;
+
+const firebaseEnvReady =
+  Boolean(firebaseProjectId) &&
+  Boolean(firebaseClientEmail) &&
+  Boolean(firebasePrivateKey);
+
+if (!firebaseEnvReady) {
+  console.error("Missing Firebase Admin environment variables:", {
+    FIREBASE_PROJECT_ID: Boolean(firebaseProjectId),
+    FIREBASE_CLIENT_EMAIL: Boolean(firebaseClientEmail),
+    FIREBASE_PRIVATE_KEY: Boolean(firebasePrivateKey),
+  });
+}
+
+if (!admin.apps.length && firebaseEnvReady) {
   admin.initializeApp({
     credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+      projectId: firebaseProjectId,
+      clientEmail: firebaseClientEmail,
+      privateKey: firebasePrivateKey.replace(/\\n/g, "\n"),
     }),
   });
 }
 
-const db = admin.firestore();
-const auth = admin.auth();
-
 module.exports = async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization"
+  );
 
   if (req.method === "OPTIONS") {
     return res.status(200).end();
@@ -30,7 +47,29 @@ module.exports = async (req, res) => {
 
   try {
     // --------------------------------------------------
-    // 1. Verify the Firebase user
+    // 0. Check Firebase Admin environment variables
+    // --------------------------------------------------
+
+    if (!firebaseEnvReady) {
+      return res.status(500).json({
+        message: "Firebase Admin environment variables are missing.",
+        variables: {
+          projectId: Boolean(firebaseProjectId),
+          clientEmail: Boolean(firebaseClientEmail),
+          privateKey: Boolean(firebasePrivateKey),
+        },
+      });
+    }
+
+    // --------------------------------------------------
+    // 1. Get Firebase Admin services
+    // --------------------------------------------------
+
+    const db = admin.firestore();
+    const auth = admin.auth();
+
+    // --------------------------------------------------
+    // 2. Verify the Firebase user
     // --------------------------------------------------
 
     const authorization = req.headers.authorization || "";
@@ -48,13 +87,15 @@ module.exports = async (req, res) => {
     try {
       decodedToken = await auth.verifyIdToken(idToken);
     } catch (error) {
+      console.error("Firebase token verification failed:", error);
+
       return res.status(401).json({
         message: "Invalid authentication token.",
       });
     }
 
     // --------------------------------------------------
-    // 2. Get the order ID
+    // 3. Get the order ID
     // --------------------------------------------------
 
     const { orderId } = req.body || {};
@@ -66,7 +107,7 @@ module.exports = async (req, res) => {
     }
 
     // --------------------------------------------------
-    // 3. Retrieve the order from Firestore
+    // 4. Retrieve the order from Firestore
     // --------------------------------------------------
 
     const orderRef = db.collection("orders").doc(orderId);
@@ -81,7 +122,7 @@ module.exports = async (req, res) => {
     const order = orderSnapshot.data();
 
     // --------------------------------------------------
-    // 4. Make sure the order belongs to this user
+    // 5. Make sure the order belongs to this user
     // --------------------------------------------------
 
     if (order.userId !== decodedToken.uid) {
@@ -91,7 +132,7 @@ module.exports = async (req, res) => {
     }
 
     // --------------------------------------------------
-    // 5. Validate the order
+    // 6. Validate the order
     // --------------------------------------------------
 
     if (!order.customer?.email) {
@@ -107,7 +148,7 @@ module.exports = async (req, res) => {
     }
 
     // --------------------------------------------------
-    // 6. Make sure Paystack secret exists
+    // 7. Make sure Paystack secret exists
     // --------------------------------------------------
 
     const secretKey = process.env.PAYSTACK_SECRET_KEY;
@@ -121,7 +162,7 @@ module.exports = async (req, res) => {
     }
 
     // --------------------------------------------------
-    // 7. Initialize Paystack transaction
+    // 8. Initialize Paystack transaction
     // --------------------------------------------------
 
     const paystackResponse = await fetch(
@@ -156,7 +197,7 @@ module.exports = async (req, res) => {
     }
 
     // --------------------------------------------------
-    // 8. Save payment information to the order
+    // 9. Save payment information to the order
     // --------------------------------------------------
 
     await orderRef.update({
@@ -166,7 +207,7 @@ module.exports = async (req, res) => {
     });
 
     // --------------------------------------------------
-    // 9. Send payment information back to React
+    // 10. Send payment information back to React
     // --------------------------------------------------
 
     return res.status(200).json({
