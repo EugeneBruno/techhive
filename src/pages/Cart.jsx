@@ -110,11 +110,26 @@ function Cart() {
                           onClick={() =>
                             updateQuantity(item.id, item.quantity - 1)
                           }
+                          disabled={item.quantity <= 1}
                         >
                           <RemoveIcon />
                         </button>
 
-                        <span>{item.quantity}</span>
+                        <input
+                          type="number"
+                          min="1"
+                          value={item.quantity}
+                          aria-label={`Quantity of ${item.name}`}
+                          onChange={(event) => {
+                            const value = event.target.value;
+
+                            if (value === "") {
+                              return;
+                            }
+
+                            updateQuantity(item.id, Number(value));
+                          }}
+                        />
 
                         <button
                           type="button"
