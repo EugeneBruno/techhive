@@ -70,20 +70,14 @@ function ProductDetails() {
   };
 
   const handleAddToCart = () => {
-    const previousQuantity = existingCartItem?.quantity || 0;
+  addToCart(product, quantity);
 
-    const quantityToAdd = quantity - previousQuantity;
+  setShowNotification(true);
 
-    if (quantityToAdd > 0) {
-      addToCart(product, quantityToAdd);
-    }
-
-    setShowNotification(true);
-
-    setTimeout(() => {
-      setShowNotification(false);
-    }, 2000);
-  };
+  setTimeout(() => {
+    setShowNotification(false);
+  }, 2000);
+};
 
   return (
     <main className="product-details-page">

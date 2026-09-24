@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
@@ -23,10 +23,22 @@ import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
+
+import {
+  doc,
+  getDoc,
+} from "firebase/firestore";
+
+import { db } from "../firebase/firebaseConfig";
 
 function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -46,6 +58,67 @@ function Navbar() {
         { label: "Register", path: "/register" },
       ];
 
+  /*
+   * Check the user's Firestore role.
+   *
+   * Firebase Authentication only tells us that the user
+   * is signed in. The admin role is stored in:
+   *
+   * users/{userId}
+   */
+  useEffect(() => {
+    const checkAdminRole = async () => {
+      if (!currentUser) {
+        setIsAdmin(false);
+        return;
+      }
+
+      try {
+        const userRef = doc(
+          db,
+          "users",
+          currentUser.uid
+        );
+
+        const userSnapshot = await getDoc(userRef);
+
+        if (userSnapshot.exists()) {
+          const userData = userSnapshot.data();
+
+          setIsAdmin(
+            userData.role === "admin"
+          );
+        } else {
+          setIsAdmin(false);
+        }
+      } catch (error) {
+        console.error(
+          "Error checking admin role:",
+          error
+        );
+
+        setIsAdmin(false);
+      }
+    };
+
+    checkAdminRole();
+  }, [currentUser]);
+
+  /*
+   * Admin dashboard item.
+   *
+   * This only exists for users whose Firestore role
+   * is "admin".
+   */
+  const adminNavItems = isAdmin
+    ? [
+        {
+          label: "Admin Dashboard",
+          path: "/admin",
+        },
+      ]
+    : [];
+
   const toggleDrawer = () => {
     setMobileOpen(!mobileOpen);
   };
@@ -53,15 +126,21 @@ function Navbar() {
   const handleLogout = async () => {
     try {
       await logout();
+
       setMobileOpen(false);
+
       navigate("/");
     } catch (error) {
-      console.error("Logout failed:", error);
+      console.error(
+        "Logout failed:",
+        error
+      );
     }
   };
 
   const renderNavItem = (item) => {
-    const isActive = location.pathname === item.path;
+    const isActive =
+      location.pathname === item.path;
 
     return (
       <Button
@@ -69,25 +148,45 @@ function Navbar() {
         component={Link}
         to={item.path}
         sx={{
-          color: isActive ? "#C85A32" : "#111215",
-          fontWeight: isActive ? 700 : 500,
+          color: isActive
+            ? "#C85A32"
+            : "#111215",
+
+          fontWeight: isActive
+            ? 700
+            : 500,
+
           textTransform: "none",
+
           fontSize: "0.95rem",
+
           px: 1.5,
+
           position: "relative",
+
           "&:hover": {
-            backgroundColor: "transparent",
+            backgroundColor:
+              "transparent",
+
             color: "#C85A32",
           },
+
           "&::after": isActive
             ? {
                 content: '""',
+
                 position: "absolute",
+
                 bottom: "4px",
+
                 left: "20%",
+
                 width: "60%",
+
                 height: "2px",
-                backgroundColor: "#C85A32",
+
+                backgroundColor:
+                  "#C85A32",
               }
             : {},
         }}
@@ -104,7 +203,8 @@ function Navbar() {
         elevation={0}
         sx={{
           backgroundColor: "#FFFFFF",
-          borderBottom: "1px solid #EDEDED",
+          borderBottom:
+            "1px solid #EDEDED",
           color: "#111215",
         }}
       >
@@ -113,52 +213,94 @@ function Navbar() {
             disableGutters
             sx={{
               minHeight: "76px",
+
               display: "flex",
-              justifyContent: "space-between",
+
+              justifyContent:
+                "space-between",
             }}
           >
             {/* Logo */}
+
             <Typography
               component={Link}
               to="/"
               sx={{
-                textDecoration: "none",
+                textDecoration:
+                  "none",
+
                 color: "#111215",
+
                 fontSize: "1.7rem",
+
                 fontWeight: 800,
-                letterSpacing: "-0.04em",
+
+                letterSpacing:
+                  "-0.04em",
               }}
             >
               Tech
-              <span style={{ color: "#C85A32" }}>Hive</span>
+              <span
+                style={{
+                  color: "#C85A32",
+                }}
+              >
+                Hive
+              </span>
             </Typography>
 
             {/* Desktop Navigation */}
+
             <Box
               sx={{
                 display: {
                   xs: "none",
                   md: "flex",
                 },
+
                 alignItems: "center",
+
                 gap: 1,
               }}
             >
-              {navItems.map(renderNavItem)}
-              {authNavItems.map(renderNavItem)}
+              {navItems.map(
+                renderNavItem
+              )}
+
+              {authNavItems.map(
+                renderNavItem
+              )}
+
+              {/* Admin Dashboard */}
+
+              {adminNavItems.map(
+                renderNavItem
+              )}
 
               {/* Desktop Logout */}
+
               {currentUser && (
                 <Button
-                  onClick={handleLogout}
+                  onClick={
+                    handleLogout
+                  }
                   sx={{
                     color: "#111215",
+
                     fontWeight: 500,
-                    textTransform: "none",
-                    fontSize: "0.95rem",
+
+                    textTransform:
+                      "none",
+
+                    fontSize:
+                      "0.95rem",
+
                     px: 1.5,
+
                     "&:hover": {
-                      backgroundColor: "transparent",
+                      backgroundColor:
+                        "transparent",
+
                       color: "#C85A32",
                     },
                   }}
@@ -168,30 +310,46 @@ function Navbar() {
               )}
 
               {/* Desktop Cart */}
+
               <IconButton
                 component={Link}
                 to="/cart"
                 sx={{
                   ml: 1,
+
                   color:
-                    location.pathname === "/cart"
+                    location.pathname ===
+                    "/cart"
                       ? "#C85A32"
                       : "#111215",
+
                   "&:hover": {
-                    backgroundColor: "#F8F9FA",
+                    backgroundColor:
+                      "#F8F9FA",
+
                     color: "#C85A32",
                   },
                 }}
               >
                 <Badge
-                  badgeContent={cartItemCount}
-                  invisible={cartItemCount === 0}
+                  badgeContent={
+                    cartItemCount
+                  }
+                  invisible={
+                    cartItemCount ===
+                    0
+                  }
                   sx={{
-                    "& .MuiBadge-badge": {
-                      backgroundColor: "#C85A32",
-                      color: "#FFFFFF",
-                      fontWeight: 700,
-                    },
+                    "& .MuiBadge-badge":
+                      {
+                        backgroundColor:
+                          "#C85A32",
+
+                        color:
+                          "#FFFFFF",
+
+                        fontWeight: 700,
+                      },
                   }}
                 >
                   <ShoppingCartOutlinedIcon />
@@ -200,36 +358,52 @@ function Navbar() {
             </Box>
 
             {/* Mobile Buttons */}
+
             <Box
               sx={{
                 display: {
                   xs: "flex",
                   md: "none",
                 },
-                alignItems: "center",
+
+                alignItems:
+                  "center",
               }}
             >
               {/* Mobile Cart */}
+
               <IconButton
                 component={Link}
                 to="/cart"
                 sx={{
                   color:
-                    location.pathname === "/cart"
+                    location.pathname ===
+                    "/cart"
                       ? "#C85A32"
                       : "#111215",
+
                   mr: 1,
                 }}
               >
                 <Badge
-                  badgeContent={cartItemCount}
-                  invisible={cartItemCount === 0}
+                  badgeContent={
+                    cartItemCount
+                  }
+                  invisible={
+                    cartItemCount ===
+                    0
+                  }
                   sx={{
-                    "& .MuiBadge-badge": {
-                      backgroundColor: "#C85A32",
-                      color: "#FFFFFF",
-                      fontWeight: 700,
-                    },
+                    "& .MuiBadge-badge":
+                      {
+                        backgroundColor:
+                          "#C85A32",
+
+                        color:
+                          "#FFFFFF",
+
+                        fontWeight: 700,
+                      },
                   }}
                 >
                   <ShoppingCartOutlinedIcon />
@@ -237,6 +411,7 @@ function Navbar() {
               </IconButton>
 
               {/* Menu */}
+
               <IconButton
                 onClick={toggleDrawer}
                 sx={{
@@ -251,6 +426,7 @@ function Navbar() {
       </AppBar>
 
       {/* Mobile Navigation Drawer */}
+
       <Drawer
         anchor="right"
         open={mobileOpen}
@@ -258,64 +434,111 @@ function Navbar() {
         PaperProps={{
           sx: {
             width: "280px",
-            backgroundColor: "#FFFFFF",
+            backgroundColor:
+              "#FFFFFF",
           },
         }}
       >
         <Box
           sx={{
             display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
+
+            justifyContent:
+              "space-between",
+
+            alignItems:
+              "center",
+
             px: 3,
+
             py: 2,
-            borderBottom: "1px solid #EDEDED",
+
+            borderBottom:
+              "1px solid #EDEDED",
           }}
         >
           <Typography
             sx={{
-              fontSize: "1.4rem",
+              fontSize:
+                "1.4rem",
+
               fontWeight: 800,
+
               color: "#111215",
             }}
           >
             Tech
-            <span style={{ color: "#C85A32" }}>Hive</span>
+            <span
+              style={{
+                color: "#C85A32",
+              }}
+            >
+              Hive
+            </span>
           </Typography>
 
-          <IconButton onClick={toggleDrawer}>
+          <IconButton
+            onClick={toggleDrawer}
+          >
             <CloseIcon />
           </IconButton>
         </Box>
 
-        <List sx={{ px: 2, pt: 2 }}>
+        <List
+          sx={{
+            px: 2,
+            pt: 2,
+          }}
+        >
           {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
+            const isActive =
+              location.pathname ===
+              item.path;
 
             return (
-              <ListItem key={item.path} disablePadding>
+              <ListItem
+                key={item.path}
+                disablePadding
+              >
                 <ListItemButton
                   component={Link}
                   to={item.path}
-                  onClick={toggleDrawer}
+                  onClick={
+                    toggleDrawer
+                  }
                   sx={{
                     mb: 1,
-                    borderLeft: isActive
-                      ? "3px solid #C85A32"
-                      : "3px solid transparent",
-                    backgroundColor: isActive
-                      ? "#F8F9FA"
-                      : "transparent",
+
+                    borderLeft:
+                      isActive
+                        ? "3px solid #C85A32"
+                        : "3px solid transparent",
+
+                    backgroundColor:
+                      isActive
+                        ? "#F8F9FA"
+                        : "transparent",
+
                     "&:hover": {
-                      backgroundColor: "#F8F9FA",
+                      backgroundColor:
+                        "#F8F9FA",
                     },
                   }}
                 >
                   <ListItemText
-                    primary={item.label}
+                    primary={
+                      item.label
+                    }
                     primaryTypographyProps={{
-                      fontWeight: isActive ? 700 : 500,
-                      color: isActive ? "#C85A32" : "#111215",
+                      fontWeight:
+                        isActive
+                          ? 700
+                          : 500,
+
+                      color:
+                        isActive
+                          ? "#C85A32"
+                          : "#111215",
                     }}
                   />
                 </ListItemButton>
@@ -324,32 +547,54 @@ function Navbar() {
           })}
 
           {authNavItems.map((item) => {
-            const isActive = location.pathname === item.path;
+            const isActive =
+              location.pathname ===
+              item.path;
 
             return (
-              <ListItem key={item.path} disablePadding>
+              <ListItem
+                key={item.path}
+                disablePadding
+              >
                 <ListItemButton
                   component={Link}
                   to={item.path}
-                  onClick={toggleDrawer}
+                  onClick={
+                    toggleDrawer
+                  }
                   sx={{
                     mb: 1,
-                    borderLeft: isActive
-                      ? "3px solid #C85A32"
-                      : "3px solid transparent",
-                    backgroundColor: isActive
-                      ? "#F8F9FA"
-                      : "transparent",
+
+                    borderLeft:
+                      isActive
+                        ? "3px solid #C85A32"
+                        : "3px solid transparent",
+
+                    backgroundColor:
+                      isActive
+                        ? "#F8F9FA"
+                        : "transparent",
+
                     "&:hover": {
-                      backgroundColor: "#F8F9FA",
+                      backgroundColor:
+                        "#F8F9FA",
                     },
                   }}
                 >
                   <ListItemText
-                    primary={item.label}
+                    primary={
+                      item.label
+                    }
                     primaryTypographyProps={{
-                      fontWeight: isActive ? 700 : 500,
-                      color: isActive ? "#C85A32" : "#111215",
+                      fontWeight:
+                        isActive
+                          ? 700
+                          : 500,
+
+                      color:
+                        isActive
+                          ? "#C85A32"
+                          : "#111215",
                     }}
                   />
                 </ListItemButton>
@@ -357,16 +602,83 @@ function Navbar() {
             );
           })}
 
+          {/* Mobile Admin Dashboard */}
+
+          {adminNavItems.map(
+            (item) => {
+              const isActive =
+                location.pathname ===
+                item.path;
+
+              return (
+                <ListItem
+                  key={item.path}
+                  disablePadding
+                >
+                  <ListItemButton
+                    component={Link}
+                    to={item.path}
+                    onClick={
+                      toggleDrawer
+                    }
+                    sx={{
+                      mb: 1,
+
+                      borderLeft:
+                        isActive
+                          ? "3px solid #C85A32"
+                          : "3px solid transparent",
+
+                      backgroundColor:
+                        isActive
+                          ? "#F8F9FA"
+                          : "transparent",
+
+                      "&:hover": {
+                        backgroundColor:
+                          "#F8F9FA",
+                      },
+                    }}
+                  >
+                    <ListItemText
+                      primary={
+                        item.label
+                      }
+                      primaryTypographyProps={{
+                        fontWeight:
+                          isActive
+                            ? 700
+                            : 500,
+
+                        color:
+                          isActive
+                            ? "#C85A32"
+                            : "#111215",
+                      }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              );
+            }
+          )}
+
           {/* Mobile Logout */}
+
           {currentUser && (
             <ListItem disablePadding>
               <ListItemButton
-                onClick={handleLogout}
+                onClick={
+                  handleLogout
+                }
                 sx={{
                   mb: 1,
-                  borderLeft: "3px solid transparent",
+
+                  borderLeft:
+                    "3px solid transparent",
+
                   "&:hover": {
-                    backgroundColor: "#F8F9FA",
+                    backgroundColor:
+                      "#F8F9FA",
                   },
                 }}
               >
