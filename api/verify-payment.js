@@ -27,6 +27,9 @@ if (admin.apps.length === 0 && firebaseEnvReady) {
   });
 }
 
+const db = admin.firestore();
+const auth = admin.auth();
+
 module.exports = async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -47,7 +50,7 @@ module.exports = async (req, res) => {
 
   try {
     // --------------------------------------------------
-    // 0. Check Firebase Admin environment variables
+    // 1. Verify Firebase environment variables
     // --------------------------------------------------
 
     if (!firebaseEnvReady) {
@@ -60,13 +63,6 @@ module.exports = async (req, res) => {
         },
       });
     }
-
-    // --------------------------------------------------
-    // 1. Get Firebase Admin services
-    // --------------------------------------------------
-
-    const db = admin.firestore();
-    const auth = admin.auth();
 
     // --------------------------------------------------
     // 2. Verify the Firebase user
@@ -95,60 +91,19 @@ module.exports = async (req, res) => {
     }
 
     // --------------------------------------------------
-    // 3. Get the order ID
+    // 3. Get the payment reference
     // --------------------------------------------------
 
-    const { orderId } = req.body || {};
+    const { reference } = req.body || {};
 
-    if (!orderId) {
+    if (!reference) {
       return res.status(400).json({
-        message: "Order ID is required.",
+        message: "Payment reference is required.",
       });
     }
 
     // --------------------------------------------------
-    // 4. Retrieve the order from Firestore
-    // --------------------------------------------------
-
-    const orderRef = db.collection("orders").doc(orderId);
-    const orderSnapshot = await orderRef.get();
-
-    if (!orderSnapshot.exists) {
-      return res.status(404).json({
-        message: "Order not found.",
-      });
-    }
-
-    const order = orderSnapshot.data();
-
-    // --------------------------------------------------
-    // 5. Make sure the order belongs to this user
-    // --------------------------------------------------
-
-    if (order.userId !== decodedToken.uid) {
-      return res.status(403).json({
-        message: "You are not authorized to pay for this order.",
-      });
-    }
-
-    // --------------------------------------------------
-    // 6. Validate the order
-    // --------------------------------------------------
-
-    if (!order.customer?.email) {
-      return res.status(400).json({
-        message: "Customer email is required.",
-      });
-    }
-
-    if (!Number.isFinite(order.total) || order.total <= 0) {
-      return res.status(400).json({
-        message: "Invalid order total.",
-      });
-    }
-
-    // --------------------------------------------------
-    // 7. Make sure Paystack secret exists
+    // 4. Get Paystack secret key
     // --------------------------------------------------
 
     const secretKey = process.env.PAYSTACK_SECRET_KEY;
@@ -162,65 +117,126 @@ module.exports = async (req, res) => {
     }
 
     // --------------------------------------------------
-    // 8. Initialize Paystack transaction
+    // 5. Verify transaction with Paystack
     // --------------------------------------------------
 
     const paystackResponse = await fetch(
-      "https://api.paystack.co/transaction/initialize",
+      `https://api.paystack.co/transaction/verify/${encodeURIComponent(
+        reference
+      )}`,
       {
-        method: "POST",
+        method: "GET",
         headers: {
           Authorization: `Bearer ${secretKey}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          email: order.customer.email,
-          amount: Math.round(order.total * 100),
-          currency: "NGN",
-          metadata: {
-            orderId,
-            userId: order.userId,
-          },
-        }),
       }
     );
 
     const paystackData = await paystackResponse.json();
 
     if (!paystackResponse.ok || !paystackData.status) {
-      console.error("Paystack initialization failed:", paystackData);
+      console.error("Paystack verification failed:", paystackData);
 
       return res.status(400).json({
         message:
-          paystackData.message || "Unable to initialize payment.",
+          paystackData.message || "Unable to verify payment.",
+      });
+    }
+
+    const transaction = paystackData.data;
+
+    // --------------------------------------------------
+    // 6. Make sure the payment was actually successful
+    // --------------------------------------------------
+
+    if (transaction.status !== "success") {
+      return res.status(400).json({
+        message: "Payment was not successful.",
+        paymentStatus: transaction.status,
       });
     }
 
     // --------------------------------------------------
-    // 9. Save payment information to the order
+    // 7. Find the order using Paystack metadata
+    // --------------------------------------------------
+
+    const orderId = transaction.metadata?.orderId;
+
+    if (!orderId) {
+      return res.status(400).json({
+        message: "Payment is missing the order reference.",
+      });
+    }
+
+    const orderRef = db.collection("orders").doc(orderId);
+    const orderSnapshot = await orderRef.get();
+
+    if (!orderSnapshot.exists) {
+      return res.status(404).json({
+        message: "Order not found.",
+      });
+    }
+
+    const order = orderSnapshot.data();
+
+    // --------------------------------------------------
+    // 8. Make sure the order belongs to this user
+    // --------------------------------------------------
+
+    if (order.userId !== decodedToken.uid) {
+      return res.status(403).json({
+        message: "You are not authorized to verify this order.",
+      });
+    }
+
+    // --------------------------------------------------
+    // 9. Verify the payment amount
+    // --------------------------------------------------
+
+    const expectedAmount = Math.round(order.total * 100);
+
+    if (transaction.amount !== expectedAmount) {
+      console.error("Payment amount mismatch:", {
+        expectedAmount,
+        receivedAmount: transaction.amount,
+        orderId,
+      });
+
+      return res.status(400).json({
+        message: "Payment amount does not match the order.",
+      });
+    }
+
+    // --------------------------------------------------
+    // 10. Update the order
     // --------------------------------------------------
 
     await orderRef.update({
       paymentMethod: "Paystack",
-      paymentStatus: "Pending",
-      paymentReference: paystackData.data.reference,
+      paymentStatus: "Paid",
+      paymentReference: transaction.reference,
+      paymentChannel: transaction.channel || null,
+      paidAt: admin.firestore.FieldValue.serverTimestamp(),
+      status: "Pending",
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
     // --------------------------------------------------
-    // 10. Send payment information back to React
+    // 11. Return successful verification
     // --------------------------------------------------
 
     return res.status(200).json({
-      message: "Payment initialized successfully.",
-      reference: paystackData.data.reference,
-      accessCode: paystackData.data.access_code,
-      authorizationUrl: paystackData.data.authorization_url,
+      message: "Payment verified successfully.",
+      paymentStatus: "Paid",
+      orderId,
+      reference: transaction.reference,
     });
   } catch (error) {
-    console.error("Initialize payment error:", error);
+    console.error("Verify payment error:", error);
 
     return res.status(500).json({
-      message: "Unable to initialize payment.",
+      message: "Unable to verify payment.",
     });
   }
 };
