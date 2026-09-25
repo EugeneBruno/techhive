@@ -1,4 +1,6 @@
-const admin = require("firebase-admin");
+const { initializeApp, getApps, cert } = require("firebase-admin/app");
+const { getFirestore } = require("firebase-admin/firestore");
+const { getAuth } = require("firebase-admin/auth");
 
 const firebaseProjectId = process.env.FIREBASE_PROJECT_ID;
 const firebaseClientEmail = process.env.FIREBASE_CLIENT_EMAIL;
@@ -17,9 +19,9 @@ if (!firebaseEnvReady) {
   });
 }
 
-if (admin.getApps().length === 0 && firebaseEnvReady) {
-  admin.initializeApp({
-    credential: admin.credential.cert({
+if (getApps().length === 0 && firebaseEnvReady) {
+  initializeApp({
+    credential: cert({
       projectId: firebaseProjectId,
       clientEmail: firebaseClientEmail,
       privateKey: firebasePrivateKey.replace(/\\n/g, "\n"),
@@ -65,8 +67,8 @@ module.exports = async (req, res) => {
     // 1. Get Firebase Admin services
     // --------------------------------------------------
 
-    const db = admin.firestore();
-    const auth = admin.auth();
+    const db = getFirestore();
+    const auth = getAuth();
 
     // --------------------------------------------------
     // 2. Verify the Firebase user
