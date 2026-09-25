@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
+
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
 import LaptopMacIcon from "@mui/icons-material/LaptopMac";
@@ -8,8 +10,9 @@ import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined
 import VerifiedUserOutlinedIcon from "@mui/icons-material/VerifiedUserOutlined";
 import WorkspacePremiumOutlinedIcon from "@mui/icons-material/WorkspacePremiumOutlined";
 
-import ProductCard from "../components/ProductCard"
-import products from "../data/products";
+import ProductCard from "../components/ProductCard";
+import useProducts from "../hooks/useProducts";
+
 import "../App.css";
 
 const categories = [
@@ -61,6 +64,17 @@ const benefits = [
 ];
 
 export default function Home() {
+  const { products, loading, error } = useProducts();
+
+  const [visibleProductCount, setVisibleProductCount] = useState(3);
+
+  const visibleProducts = products.slice(0, visibleProductCount);
+
+  const hasMoreProducts = visibleProductCount < products.length;
+
+  const handleSeeMore = () => {
+    setVisibleProductCount((currentCount) => currentCount + 4);
+  };
   return (
     <main>
       {/* HERO SECTION */}
@@ -132,121 +146,148 @@ export default function Home() {
       {/* FEATURED PRODUCTS */}
       <section className="featured-products-section">
         <div className="section-header">
-
           <div>
+            <p className="section-eyebrow">FEATURED</p>
 
-            <p className="section-eyebrow">
-              FEATURED
-            </p>
-
-            <h2>
-              Technology worth exploring.
-            </h2>
-
+            <h2>Technology worth exploring.</h2>
           </div>
 
-          <Link
-            to="/products"
-            className="view-all-link"
-          >
+          <Link to="/products" className="view-all-link">
             View all products
-
             <ArrowForwardIcon />
-
           </Link>
-
         </div>
+
         <div className="products-grid">
-         {products.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-          />
+          {loading ? (
+            <div className="no-products">
+              <h3>Loading products...</h3>
 
-         ))}
+              <p>
+                Please wait while our catalogue loads.
+              </p>
+            </div>
+          ) : error ? (
+            <div className="no-products">
+              <h3>Unable to load products.</h3>
 
+              <p>{error}</p>
+            </div>
+          ) : products.length > 0 ? (
+            <>
+              {visibleProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                />
+              ))}
+
+              {hasMoreProducts && (
+                <button
+                  type="button"
+                  className="see-more-product-card"
+                  onClick={handleSeeMore}
+                >
+                  <span>SEE MORE</span>
+
+                  <ArrowForwardIcon />
+
+                  <small>
+                    View more products
+                  </small>
+                </button>
+              )}
+            </>
+          ) : (
+            <div className="no-products">
+              <h3>No products available.</h3>
+
+              <p>
+                Products will appear here once they are added to the
+                catalogue.
+              </p>
+            </div>
+          )}
         </div>
       </section>
 
       {/* WHY TECHHIVE SECTION */}
-<section className="why-techhive-section">
-  <div className="why-techhive-intro">
-    <p className="section-eyebrow">WHY TECHHIVE</p>
+      <section className="why-techhive-section">
+        <div className="why-techhive-intro">
+          <p className="section-eyebrow">WHY TECHHIVE</p>
 
-    <h2>
-      Technology selected
-      <br />
-      for real life.
-    </h2>
+          <h2>
+            Technology selected
+            <br />
+            for real life.
+          </h2>
 
-    <p>
-      We believe buying technology should be simple. That is why we focus on
-      products that are useful, reliable, and built for the way you live,
-      work, and play.
-    </p>
-  </div>
-
-  <div className="benefits-grid">
-    {benefits.map((benefit, index) => (
-      <div className="benefit-card" key={benefit.title}>
-        <div className="benefit-number">
-          0{index + 1}
+          <p>
+            We believe buying technology should be simple. That is why we
+            focus on products that are useful, reliable, and built for the
+            way you live, work, and play.
+          </p>
         </div>
 
-        <div className="benefit-icon">
-          {benefit.icon}
+        <div className="benefits-grid">
+          {benefits.map((benefit, index) => (
+            <div className="benefit-card" key={benefit.title}>
+              <div className="benefit-number">
+                0{index + 1}
+              </div>
+
+              <div className="benefit-icon">
+                {benefit.icon}
+              </div>
+
+              <h3>{benefit.title}</h3>
+
+              <p>{benefit.description}</p>
+            </div>
+          ))}
         </div>
-
-        <h3>{benefit.title}</h3>
-
-        <p>{benefit.description}</p>
-      </div>
-    ))}
-  </div>
-</section>
-
+      </section>
 
       {/* NEWSLETTER SECTION */}
-<section className="newsletter-section">
-  <div className="newsletter-content">
-    <div>
-      <p className="newsletter-eyebrow">
-        STAY CONNECTED
-      </p>
+      <section className="newsletter-section">
+        <div className="newsletter-content">
+          <div>
+            <p className="newsletter-eyebrow">
+              STAY CONNECTED
+            </p>
 
-      <h2>
-        Stay ahead of
-        <br />
-        technology.
-      </h2>
-    </div>
+            <h2>
+              Stay ahead of
+              <br />
+              technology.
+            </h2>
+          </div>
 
-    <div className="newsletter-right">
-      <p>
-        Get updates on new products, technology trends, and exclusive offers
-        delivered straight to your inbox.
-      </p>
+          <div className="newsletter-right">
+            <p>
+              Get updates on new products, technology trends, and exclusive
+              offers delivered straight to your inbox.
+            </p>
 
-      <form className="newsletter-form">
-        <input
-          type="email"
-          placeholder="Enter your email address"
-          aria-label="Email address"
-        />
+            <form className="newsletter-form">
+              <input
+                type="email"
+                placeholder="Enter your email address"
+                aria-label="Email address"
+              />
 
-        <button type="submit">
-          Subscribe
-          <ArrowForwardIcon />
-        </button>
-      </form>
+              <button type="submit">
+                Subscribe
+                <ArrowForwardIcon />
+              </button>
+            </form>
 
-      <span>
-        No spam. Just technology worth knowing about.
-      </span>
-    </div>
-  </div>
-</section>
-
+            <span>
+              No spam. Just technology worth knowing about.
+            </span>
+          </div>
+        </div>
+      </section>
     </main>
   );
 }

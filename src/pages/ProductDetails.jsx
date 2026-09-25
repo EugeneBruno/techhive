@@ -1,5 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
+import {
+  doc,
+  onSnapshot,
+} from "firebase/firestore";
+
+import { db } from "../firebase/firebaseConfig";
 import { Link, useParams } from "react-router-dom";
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -7,7 +13,6 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 
-import products from "../data/products";
 
 import { formartCurrency } from "../utils/formatCurrency";
 
@@ -18,9 +23,40 @@ import "../App.css";
 function ProductDetails() {
   const { id } = useParams();
 
-  const product = products.find(
-    (item) => item.id === Number(id)
+  const [product, setProduct] = useState(null);
+const [loading, setLoading] = useState(true);
+
+useEffect(() => {
+  if (!id) {
+    setLoading(false);
+    return;
+  }
+
+  const productRef = doc(db, "products", id);
+
+  const unsubscribe = onSnapshot(
+    productRef,
+    (snapshot) => {
+      if (snapshot.exists()) {
+        setProduct({
+          id: snapshot.id,
+          ...snapshot.data(),
+        });
+      } else {
+        setProduct(null);
+      }
+
+      setLoading(false);
+    },
+    (error) => {
+      console.error("Error loading product:", error);
+      setProduct(null);
+      setLoading(false);
+    }
   );
+
+  return unsubscribe;
+}, [id]);
 
   const { cartItems, addToCart } = useCart();
 
@@ -33,6 +69,22 @@ function ProductDetails() {
   );
 
   const [showNotification, setShowNotification] = useState(false);
+
+  if (loading) {
+    return (
+      <main className="product-details-page">
+        <div className="product-not-found">
+          <p className="page-eyebrow">LOADING PRODUCT</p>
+
+          <h1>Loading product...</h1>
+
+          <p>
+            Please wait while the product information is loaded.
+          </p>
+        </div>
+      </main>
+    );
+  }
 
   if (!product) {
     return (

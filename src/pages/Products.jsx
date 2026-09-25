@@ -1,11 +1,14 @@
-import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+
+import { useSearchParams } from  "react-router-dom";
 
 import SearchIcon from "@mui/icons-material/Search";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 import ProductCard from "../components/ProductCard";
-import products from "../data/products";
+
+import useProducts from "../hooks/useProducts";
 
 import "../App.css";
 
@@ -21,36 +24,69 @@ function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const categoryParam = searchParams.get("category") || "All";
-  const categoryFromUrl = categoryParam
-    ? categoryParam.charAt(0).toUpperCase() + categoryParam.slice(1)
-    : "All" 
 
-  const [activeCategory, setActiveCategory] = useState(categoryFromUrl);
+  const categoryFromUrl = categoryParam
+    ? categoryParam.charAt(0).toUpperCase() +
+      categoryParam.slice(1)
+    : "All";
+
+  const [activeCategory, setActiveCategory] =
+    useState(categoryFromUrl);
+
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortOption, setSortOption] = useState("featured");
+
+  const [sortOption, setSortOption] =
+    useState("featured");
+
+  const [visibleProductCount, setVisibleProductCount] =
+    useState(3);
+
+  const { products, loading, error } = useProducts();
+
+  // --------------------------------------------------
+  // CATEGORY
+  // --------------------------------------------------
 
   const handleCategoryChange = (category) => {
     setActiveCategory(category);
- 
+    setVisibleProductCount(3);
+
     if (category === "All") {
-      setSearchParams({});
+      setSearchParams(
+        {},
+        {
+          replace: true,
+          preventScrollReset: true,
+        }
+      );
     } else {
-      setSearchParams({
-        category: category.toLowerCase(),
-      });
+      setSearchParams(
+        {
+          category: category.toLowerCase(),
+        },
+        {
+          replace: true,
+          preventScrollReset: true,
+        }
+      );
     }
   };
+
+  // --------------------------------------------------
+  // FILTER + SEARCH + SORT
+  // --------------------------------------------------
 
   const filteredProducts = products
     .filter((product) => {
       const matchesCategory =
         activeCategory === "All" ||
-        product.category.toLowerCase() ===
+        product.category?.toLowerCase() ===
           activeCategory.toLowerCase();
 
-      const matchesSearch = product.name
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
+      const matchesSearch =
+        product.name
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase());
 
       return matchesCategory && matchesSearch;
     })
@@ -66,13 +102,42 @@ function Products() {
       return 0;
     });
 
+  // --------------------------------------------------
+  // RESET PAGINATION WHEN SEARCH CHANGES
+  // --------------------------------------------------
+
+  useEffect(() => {
+    setVisibleProductCount(3);
+  }, [searchTerm, sortOption]);
+
+  // --------------------------------------------------
+  // PAGINATION
+  // --------------------------------------------------
+
+  const visibleProducts = filteredProducts.slice(
+    0,
+    visibleProductCount
+  );
+
+  const hasMoreProducts =
+    visibleProductCount < filteredProducts.length;
+
+  const handleSeeMore = () => {
+    setVisibleProductCount(
+      (currentCount) => currentCount + 4
+    );
+  };
+
+  // --------------------------------------------------
+  // RENDER
+  // --------------------------------------------------
+
   return (
     <div className="products-page">
 
       {/* PAGE HEADER */}
 
       <section className="products-header">
-
         <p className="page-eyebrow">
           OUR COLLECTION
         </p>
@@ -82,10 +147,10 @@ function Products() {
         </h1>
 
         <p>
-          Explore our collection of carefully selected technology,
-          built to keep you connected, productive, and entertained.
+          Explore our collection of carefully selected
+          technology, built to keep you connected,
+          productive, and entertained.
         </p>
-
       </section>
 
 
@@ -98,23 +163,22 @@ function Products() {
           {/* SEARCH */}
 
           <div className="search-container">
-
             <SearchIcon />
 
             <input
               type="text"
               placeholder="Search products..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) =>
+                setSearchTerm(e.target.value)
+              }
             />
-
           </div>
 
 
           {/* SORT */}
 
           <div className="sort-container">
-
             <select
               value={sortOption}
               onChange={(e) =>
@@ -132,11 +196,9 @@ function Products() {
               <option value="high-low">
                 Price: High to Low
               </option>
-
             </select>
 
             <KeyboardArrowDownIcon />
-
           </div>
 
         </div>
@@ -147,7 +209,6 @@ function Products() {
         <div className="category-filters">
 
           {categories.map((category) => (
-
             <button
               key={category}
               className={
@@ -161,7 +222,6 @@ function Products() {
             >
               {category}
             </button>
-
           ))}
 
         </div>
@@ -174,33 +234,92 @@ function Products() {
       <section className="products-results">
 
         <div className="products-results-header">
-
           <p>
-            Showing {filteredProducts.length} product
-            {filteredProducts.length !== 1 ? "s" : ""}
+            {loading
+              ? "Loading products..."
+              : `Showing ${
+                  Math.min(
+                    visibleProductCount,
+                    filteredProducts.length
+                  )
+                } of ${filteredProducts.length} product${
+                  filteredProducts.length !== 1
+                    ? "s"
+                    : ""
+                }`}
           </p>
-
         </div>
 
 
         <div className="products-grid">
 
-          {filteredProducts.length > 0 ? (
+          {loading ? (
 
-            filteredProducts.map((product) => (
+            <div className="no-products">
+              <h3>
+                Loading products...
+              </h3>
 
-              <ProductCard
-                key={product.id}
-                product={product}
-              />
+              <p>
+                Please wait while our catalogue loads.
+              </p>
+            </div>
 
-            ))
+          ) : error ? (
+
+            <div className="no-products">
+              <h3>
+                Unable to load products.
+              </h3>
+
+              <p>
+                {error}
+              </p>
+            </div>
+
+          ) : filteredProducts.length > 0 ? (
+
+            <>
+
+              {/* VISIBLE PRODUCTS */}
+
+              {visibleProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                />
+              ))}
+
+
+              {/* SEE MORE */}
+
+              {hasMoreProducts && (
+                <button
+                  type="button"
+                  className="see-more-product-card"
+                  onClick={handleSeeMore}
+                >
+                  <span>
+                    SEE MORE
+                  </span>
+
+                  <ArrowForwardIcon />
+
+                  <small>
+                    View more products
+                  </small>
+                </button>
+              )}
+
+            </>
 
           ) : (
 
             <div className="no-products">
 
-              <h3>No products found.</h3>
+              <h3>
+                No products found.
+              </h3>
 
               <p>
                 Try adjusting your search or filters.

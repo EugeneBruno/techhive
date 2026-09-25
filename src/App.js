@@ -51,11 +51,11 @@ import Profile from "./pages/Profile";
 
 
 function ScrollToTop() {
-  const { pathname, search } = useLocation();
+  const { pathname} = useLocation();
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [pathname, search]);
+  }, [pathname]);
 
   return null;
 }
