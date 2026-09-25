@@ -204,7 +204,6 @@ Successful payments update the order with information including:
 - Git
 - GitHub
 - Visual Studio Code
-- IntelliJ IDEA
 - Postman
 - npm
 
