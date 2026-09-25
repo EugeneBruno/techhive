@@ -218,7 +218,7 @@ module.exports = async (req, res) => {
       paymentReference: transaction.reference,
       paymentChannel: transaction.channel || null,
       paidAt: admin.firestore.FieldValue.serverTimestamp(),
-      status: "Pending",
+      status: "Confirmed",
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
