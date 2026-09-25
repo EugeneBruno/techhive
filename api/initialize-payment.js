@@ -17,7 +17,7 @@ if (!firebaseEnvReady) {
   });
 }
 
-if (!admin.apps.length && firebaseEnvReady) {
+if (admin.getApps().length === 0 && firebaseEnvReady) {
   admin.initializeApp({
     credential: admin.credential.cert({
       projectId: firebaseProjectId,
