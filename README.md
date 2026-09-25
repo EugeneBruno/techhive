@@ -1,70 +1,660 @@
-# Getting Started with Create React App
+# TechHive
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+TechHive is a modern e-commerce web application built with React, React Router, Material UI (MUI), Firebase, Firestore, and Paystack.
+
+The application allows customers to browse technology products, search and filter products, manage their shopping cart, create accounts, place orders, make payments through Paystack, and view their order history.
+
+It also includes an admin panel for managing products and customer orders.
+
+---
+
+## Live Application
+
+**Live URL:**  
+https://techhive-gamma.vercel.app
+
+## GitHub Repository
+
+**Repository:**  
+https://github.com/EugeneBruno/techhive
+
+---
+
+## Project Requirements
+
+TechHive was developed using the following technologies and concepts:
+
+- React
+- React Router
+- Material UI (MUI)
+- Firebase Authentication
+- Firebase Firestore
+- Responsive design
+- Git and GitHub
+- Paystack payment gateway
+- CRUD operations
+- React state management
+- Forms
+- Loading and error states
+
+---
+
+## Features
+
+### Customer Features
+
+#### Home Page
+
+- Hero section
+- Featured products
+- Products loaded from Firestore
+- Progressive product display
+- "See More" product pagination
+- Navigation to the full product catalogue
+
+#### Product Catalogue
+
+- View all available products
+- Product categories
+- Product search
+- Price sorting
+- Category filtering
+- Progressive pagination
+- Real-time product updates from Firestore
+- Product cards with product information
+
+#### Product Details
+
+- Product image
+- Product name
+- Product category
+- Product price
+- Product description
+- Quantity controls
+- Add to cart
+- Navigation back to products
+
+#### Shopping Cart
+
+- Add products to cart
+- Update product quantities
+- Remove products
+- Display total item count
+- Calculate cart total
+- Guest cart support
+- User-specific cart persistence
+
+#### Authentication
+
+- User registration
+- User login
+- Firebase Authentication
+- Logout
+- Protected checkout
+- Protected customer profile
+- Admin route protection
+
+#### Checkout
+
+- Customer contact information
+- Delivery information
+- Order summary
+- Paystack payment
+- Payment verification
+- Successful orders saved to Firestore
+
+#### Profile
+
+- Customer profile information
+- Order history
+- Order status
+- Payment status
+- Real-time order updates
+
+---
+
+## Admin Features
+
+TechHive includes an admin dashboard for managing the store.
+
+### Product Management
+
+Administrators can:
+
+- View products
+- Add products
+- Edit products
+- Delete products
+- Manage product information
+- Manage product categories
+- Manage prices
+- Manage product images
+- Manage product descriptions
+
+Products are stored in the Firestore `products` collection.
+
+### Order Management
+
+Administrators can:
+
+- View customer orders
+- View order details
+- View payment information
+- Update order status
+- Monitor order processing
+
+---
+
+## Payment System
+
+TechHive uses Paystack for online payments.
+
+The payment flow is:
+
+```text
+Customer
+   ↓
+Checkout
+   ↓
+Create Order
+   ↓
+Initialize Paystack Payment
+   ↓
+Paystack Checkout
+   ↓
+Payment
+   ↓
+Verify Transaction
+   ↓
+Update Firestore Order
+   ↓
+Payment Confirmed
+```
+
+Successful payments update the order with information including:
+
+- Payment method
+- Payment status
+- Payment reference
+- Payment channel
+- Payment timestamp
+- Order status
+
+---
+
+## Technology Stack
+
+### Frontend
+
+- React
+- React Router
+- Material UI
+- CSS
+- JavaScript
+
+### Backend / Services
+
+- Firebase Authentication
+- Firebase Firestore
+- Vercel Serverless Functions
+- Paystack API
+
+### Development Tools
+
+- Git
+- GitHub
+- Visual Studio Code
+- IntelliJ IDEA
+- Postman
+- npm
+
+---
+
+## Project Structure
+
+```text
+techhive/
+│
+├── api/
+│   ├── initialize-payment.js
+│   └── verify-payment.js
+│
+├── public/
+│
+├── src/
+│   │
+│   ├── components/
+│   │   ├── AdminRoute.jsx
+│   │   ├── Footer.jsx
+│   │   ├── Navbar.jsx
+│   │   └── ProductCard.jsx
+│   │
+│   ├── context/
+│   │   ├── AuthContext.jsx
+│   │   └── CartContext.jsx
+│   │
+│   ├── data/
+│   │   └── products.js
+│   │
+│   ├── firebase/
+│   │   └── firebaseConfig.js
+│   │
+│   ├── hooks/
+│   │   └── useProducts.js
+│   │
+│   ├── pages/
+│   │   ├── AddProduct.jsx
+│   │   ├── Admin.jsx
+│   │   ├── AdminOrders.jsx
+│   │   ├── AdminProducts.jsx
+│   │   ├── Cart.jsx
+│   │   ├── Checkout.jsx
+│   │   ├── EditProduct.jsx
+│   │   ├── Home.jsx
+│   │   ├── Login.jsx
+│   │   ├── ProductDetails.jsx
+│   │   ├── Products.jsx
+│   │   ├── Profile.jsx
+│   │   └── Register.jsx
+│   │
+│   ├── utils/
+│   │   └── formatCurrency.js
+│   │
+│   ├── App.css
+│   ├── App.js
+│   └── index.css
+│
+├── package.json
+└── README.md
+```
+
+---
+
+## Firestore Collections
+
+### Users
+
+The `users` collection stores registered customer information and user roles.
+
+Example structure:
+
+```text
+users/
+   userId/
+      firstName
+      lastName
+      email
+      phone
+      role
+```
+
+Possible roles include:
+
+```text
+customer
+admin
+```
+
+### Products
+
+Products are stored in:
+
+```text
+products/
+   productId/
+```
+
+Product information includes fields such as:
+
+```text
+name
+category
+price
+description
+image
+```
+
+### Orders
+
+Customer orders are stored in:
+
+```text
+orders/
+   orderId/
+```
+
+Orders contain information including:
+
+```text
+userId
+items
+total
+paymentMethod
+paymentStatus
+paymentReference
+paymentChannel
+status
+createdAt
+updatedAt
+```
+
+---
+
+## Environment Variables
+
+Create a `.env` file in the project root.
+
+### Firebase Client Configuration
+
+```env
+REACT_APP_FIREBASE_API_KEY=your_firebase_api_key
+REACT_APP_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
+REACT_APP_FIREBASE_PROJECT_ID=your_firebase_project_id
+REACT_APP_FIREBASE_STORAGE_BUCKET=your_firebase_storage_bucket
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_firebase_messaging_sender_id
+REACT_APP_FIREBASE_APP_ID=your_firebase_app_id
+```
+
+### Server-side Payment Configuration
+
+The following variables are configured in the Vercel project environment and should not be exposed in the React frontend:
+
+```env
+PAYSTACK_SECRET_KEY=your_paystack_secret_key
+
+FIREBASE_PROJECT_ID=your_firebase_project_id
+FIREBASE_CLIENT_EMAIL=your_firebase_client_email
+FIREBASE_PRIVATE_KEY=your_firebase_private_key
+```
+
+> Never commit `.env` files, Paystack secret keys, or Firebase service-account credentials to GitHub.
+
+---
+
+## Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/EugeneBruno/techhive.git
+```
+
+Move into the project directory:
+
+```bash
+cd techhive
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Create the required environment variables.
+
+Then start the React development server:
+
+```bash
+npm start
+```
+
+The application will normally be available at:
+
+```text
+http://localhost:3000
+```
+
+---
 
 ## Available Scripts
 
-In the project directory, you can run:
+### Start Development Server
 
-### `npm start`
+```bash
+npm start
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Runs the application in development mode.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Build for Production
 
-### `npm test`
+```bash
+npm run build
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Creates an optimized production build.
 
-### `npm run build`
+### Run Tests
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+npm test
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Runs the project's test command provided by Create React App.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## Authentication and Authorization
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Firebase Authentication is used to manage customer accounts.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Protected routes include:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```text
+/checkout
+/profile
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Administrative routes are protected using the `AdminRoute` component.
 
-## Learn More
+Administrative pages include:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```text
+/admin
+/admin/products
+/admin/products/new
+/admin/products/edit/:id
+/admin/orders
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+The user's Firestore document contains a `role` field that determines whether the user has administrative access.
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Cart Management
 
-### Analyzing the Bundle Size
+The cart supports both guests and authenticated users.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### Guest Cart
 
-### Making a Progressive Web App
+Guest cart data is stored in:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```text
+localStorage
+```
 
-### Advanced Configuration
+using:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+```text
+techhive_guest_cart
+```
 
-### Deployment
+### Authenticated User Cart
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+Each authenticated user receives a separate cart:
 
-### `npm run build` fails to minify
+```text
+techhive_cart_USER_ID
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+When a guest signs in, the guest cart is merged into the authenticated user's cart.
+
+---
+
+## Product Data
+
+Firestore is the primary source of truth for products displayed throughout the storefront.
+
+The application uses the custom `useProducts` hook to retrieve products from Firestore.
+
+This allows products added through the admin panel to automatically appear on:
+
+- Home
+- Products
+- Product Details
+
+without requiring the product to be manually added to the frontend source code.
+
+---
+
+## Product Pagination
+
+The Home and Products pages use progressive product loading.
+
+The initial display shows:
+
+```text
+3 products
+```
+
+Selecting **SEE MORE** reveals additional products in groups of four.
+
+The Products page also resets pagination when the customer changes:
+
+- Category
+- Search term
+- Sort option
+
+---
+
+## Design System
+
+TechHive uses a clean editorial visual style with the following design tokens:
+
+| Purpose | Color |
+|---|---|
+| Background | `#F8F9FA` |
+| Primary Accent | `#C85A32` |
+| Primary Text | `#111215` |
+| Muted Text | `#6E727A` |
+| Cards / Surfaces | `#FFFFFF` |
+| Borders | `#EDEDED` |
+
+The interface uses Nigerian Naira (`₦`) for product pricing.
+
+---
+
+## Responsive Design
+
+The application is designed to work across:
+
+- Desktop
+- Tablet
+- Mobile
+
+Responsive styling is implemented using CSS media queries and responsive component layouts.
+
+---
+
+## Security
+
+Firestore rules restrict administrative product operations and administrative order management to authenticated users with an admin role.
+
+Customer data and orders are protected using Firebase Authentication and Firestore security rules.
+
+Sensitive server-side credentials are stored as Vercel environment variables rather than being exposed in the frontend application.
+
+---
+
+## Deployment
+
+The application is deployed using Vercel.
+
+Production deployment:
+
+```text
+https://techhive-gamma.vercel.app
+```
+
+The payment API is implemented using Vercel serverless functions located in:
+
+```text
+/api
+```
+
+These functions communicate with Paystack and Firebase Admin.
+
+---
+
+## Git Workflow
+
+Git and GitHub were used throughout development.
+
+The project uses feature branches for major development stages, including:
+
+```text
+main
+dev
+feature/home-page
+feature/product-details
+feature/cart
+feature/authentication
+feature/order-history
+feature/admin-panel
+feature/payment
+```
+
+Completed features were merged into the development branch before final deployment.
+
+---
+
+## Project Pages
+
+### Customer Pages
+
+```text
+/
+/products
+/products/:id
+/cart
+/checkout
+/login
+/register
+/profile
+```
+
+### Admin Pages
+
+```text
+/admin
+/admin/products
+/admin/products/new
+/admin/products/edit/:id
+/admin/orders
+```
+
+---
+
+## Project Objectives
+
+The project demonstrates practical implementation of:
+
+- Component-based React development
+- Client-side routing
+- React state management
+- Forms and form handling
+- Authentication
+- Authorization
+- Firestore database operations
+- CRUD functionality
+- Search and filtering
+- Shopping cart management
+- Order management
+- Payment gateway integration
+- API/serverless functions
+- Responsive UI development
+- Git and GitHub workflow
+- Production deployment
+
+---
